@@ -1,10 +1,11 @@
 ## Gitignore by github
 ## -------------------
-
+.editorconfig
 *.css
 db.json
 config.json
 build/
+*.lock
 # Logs
 logs
 *.log

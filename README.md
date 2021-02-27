@@ -1,39 +1,15 @@
 # ShareList
 
-在线挂载 GoogleDrive、OneDrive 的简易工具 ， 只需提供分享文件夹ID。
+[![Build Status](https://api.travis-ci.com/reruin/sharelist.svg?branch=master)](https://travis-ci.com/reruin/sharelist)
 
-## 特性
-1. 文件夹ID挂载网盘
-2. 支持虚拟目录
-在网盘内以如下格式重命名文件夹
-格式：```显示名称.文件夹id.类型```
-类型支持 od(OneDrive) gd(GoogleDrive)
+[ENGLISH](README-en.md)  
 
-## 安装
-### Shell
-````bash
-bash install.sh
-````
+## 介绍
+ShareList 是一个易用的网盘工具，支持快速挂载 GoogleDrive、OneDrive ，可通过插件扩展功能。
 
-### Docker support
-````bash
-docker build -t yourname/sharelist .
+## 文档
+[查看文档](https://reruin.github.io/sharelist/docs/#/zh-cn/)
 
-docker run -d -v /etc/sharelist:/app/cache -p 33001:33001 --name="sharelist" yourname/sharelist
-````
-
-OR
-
-````bash
-docker-compose up
-````
-
-访问 `http://localhost:33001` 
-
-
-### Heroku
-
-[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/reruin/sharelist-heroku)
-
-
-
+## 许可
+[Apache-2](http://www.apache.org/licenses/LICENSE-2.0)   
+Copyright (c) 2018-present, Reruin

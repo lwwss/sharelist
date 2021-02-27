@@ -1,65 +1,82 @@
-const Koa = require('koa')
-const views = require('koa-views')
-const json = require('koa-json')
-const onerror = require('koa-onerror')
-const bodyparser = require('koa-bodyparser')
-const logger = require('koa-logger')
-const koaStatic = require('koa-static')
+#!/usr/bin/env node
 
-const less = require('./middleware/koa-less')
-const addr = require('./middleware/koa-addr')
-const paths = require('./middleware/koa-paths')
+/**
+ * Module dependencies.
+ */
 
-const routers = require('./routers/index')
-const cors = require('@koa/cors');
+var app = require('./app/index')
+var http = require('http');
+var os = require('os')
+var config = require('./app/config')
+var fs = require('fs')
+if(!fs.existsSync('./cache')){
+  fs.mkdirSync('./cache');
+}
 
+var port = normalizePort(config.getConfig('port') || 33001);
 
-// const proxy = require('./utils/proxy')
-
-const app = new Koa()
-
-onerror(app)
-
-app.use(cors())
-
-app.use(bodyparser({
-  enableTypes:['json', 'form', 'text']
-}))
-
-app.use(json())
-
-app.use(addr)
-
-app.use(paths)
-
-// 配置控制台日志中间件
-app.use(logger())
-
-//less 中间件
-app.use(less(__dirname + '/public'))
-
-// 配置静态资源加载中间件
-app.use(koaStatic(__dirname + '/public'))
-
-// 配置服务端模板渲染引擎中间件
-app.use(views(__dirname + '/views', {
-  extension: 'pug'
-}))
+var server = http.createServer(app.callback());
 
 
-// 初始化路由中间件
-app.use(routers.routes()).use(routers.allowedMethods())
+server.listen(port);
+server.on('error', onError);
+server.on('listening', onListening);
 
 
-app.use(async (ctx) => {
-  console.log(ctx.status);
-  switch (ctx.status) {
-    case 404:
-      await ctx.render('404');
-      break;
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
   }
-})
 
-// proxy.start(5002)
+  if (port >= 0) {
+    // port number
+    return port;
+  }
 
-module.exports = app
+  return false;
+}
+
+function getIpv4() {
+  var ifaces = os.networkInterfaces();
+  for (var dev in ifaces) {
+      for (var i in ifaces[dev]) {
+          var details = ifaces[dev][i];
+          if (/^\d+\./.test(details.address)) {
+              return details.address;
+          }
+      }
+  }
+}
+
+function onError(error) {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+
+  var bind = typeof port === 'string'
+    ? 'Pipe ' + port
+    : 'Port ' + port;
+
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case 'EACCES':
+      console.error(bind + ' requires elevated privileges');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(bind + ' is already in use');
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
+
+
+function onListening() {
+  console.log(new Date().toISOString())
+  console.log('App is running at http://'+getIpv4()+':'+port+'/')
+}
